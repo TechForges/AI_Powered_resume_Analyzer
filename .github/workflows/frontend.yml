@@ -1,0 +1,53 @@
+name: Frontend CI/CD
+
+# Trigger the workflow on push or pull request events to the 'main' branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+jobs:
+  # Job to run on a specific environment (Ubuntu in this case)
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.17.0'  # Specify the version of Node.js you are using
+
+      # Cache Yarn dependencies for faster installs
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      # Install dependencies using Yarn
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      # Run tests using Yarn (if you have tests set up)
+      - name: Run tests
+        run: |
+          yarn test
+
+      # Build the project using Yarn
+      - name: Build frontend
+        run: |
+          yarn build
+
+      # Optionally deploy or take further actions, for example:
+      # - name: Deploy to production (if applicable)
+      #   run: ./deploy.sh
