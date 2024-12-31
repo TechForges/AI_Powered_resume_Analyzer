@@ -1,14 +1,15 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import siteRoutes from "./routes/routes.js"
 
-dotenv.config()
-
+//configuration for .env file useage
+dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-app.get("/",(req,res) => {
-    res.send(`Server is ready in port ${port}`);
-});
+//middleware to accept JSON data in the req.body
+app.use(express.json());
+app.use("/api",siteRoutes);
 
 //nodemon is scripted to use "npm run dev". port is set to 5000. add port to .env file when pulled to local machine
 const server = app.listen(port,() => {
